@@ -19,8 +19,32 @@ Nowadays, FFTW is not the fastest one, but it is the reference point for other l
 and [pffft](https://bitbucket.org/jpommier/pffft)
 seem to have performance similar to FFTW while being much simpler.
 
-Libraries that are not SIMD-optimized,
-such as KissFFT, meow_fft (single header!) and pocketfft
+Libraries that are not SIMD-optimized, such as
+[KissFFT](https://github.com/mborgerding/kissfft),
+[meow_fft](https://github.com/JodiTheTigger/meow_fft)
+and [pocketfft](https://gitlab.mpcdf.mpg.de/mtr/pocketfft)
 tend to be slower, but are also worth considering.
 
 I don't plan using GPU for computations.
+
+First, a quick look at these projects:
+
+| Library | License | Since | Language | Comments |
+|---------|---------|-------|----------|----------|
+|FFTW     | GPL or $| 1997  |          |          |
+|MKL      | freeware| 20??  |          |          |
+|KFR      | GPL or $| 2016  |  C++14   | header-only |
+|FFTS     | MIT     | 2012  |  C       |          |
+|muFFT    | MIT     | 2015  |  C       |          |
+|pffft    | BSD-like| 2011  |  C       |          |
+|KissFFT  | 3-BSD   | 2003  |  C       |          |
+|meow_fft | 0-BSD   | 2017  |  C       | single header |
+|pocketfft| 3-BSD   | 2010? |  C       |          |
+
+Features, source code size and binary size
+
+TODO
+
+Performance and accuracy
+
+TODO
