@@ -60,21 +60,24 @@ C++ project here. Its author wrote a post
 I'm primarily after 3D complex-to-real and real-to-complex transforms.
 For me, radices 2 and 3 are a must, 5 is useful, 7+ could also be useful.
 
-r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).
-"++" in the "prime" column means the Bluestein's algorithm.
+r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).  
+"++" in the "prime" column means the Bluestein's algorithm.  
+"32b" and "64b" denote 32- and 64-bit, i.e. single and double precision data.
 
-| Library | r-3 | r-4 | r-5 | r-7 | r-8 | prime | 2D | 3D |
-|---------|-----|-----|-----|-----|-----|-------|----|----|
-|FFTW     |  +  |  +  |  +  |  +  |  +  |  ++   | +  | +  |
-|MKL      |  +  |  +  |  +  |  +  |  +  |  +?   | +  | +  |
-|KFR      |  +  |  +  |  +  |  +  |  +  |   -   | -  | -  |
-|FFTS     |  -  |  +  |  -  |  -  |  +  |  ++   | +  | +  |
-|FFTE     |  +  |  +  |  +  |  -  |  +  |   -   | +  | +  |
-|muFFT    |  -  |  +  |  -  |  -  |  +  |   -   | +  | -  |
-|pffft    |  +  |  +  |  +  |  -  |  -  |   -   | -  | -  |
-|KissFFT  |  +  |  +  |  +  |  -  |  -  |   +   | +  | +  |
-|meow_fft |  +  |  +  |  +  |  -  |  +  |   +   | -  | -  |
-|pocketfft|  +  |  +  |  +  |  +  |  -  |  ++   | -  | -  |
+| Library | r-3 | r-4 | r-5 | r-7 | r-8 | prime | 2D | 3D | 32b | 64b |
+|---------|-----|-----|-----|-----|-----|-------|----|----|-----|-----|
+|FFTW     |  +  |  +  |  +  |  +  |  +  |  ++   | +  | +  |  +  |  +  |
+|MKL      |  +  |  +  |  +  |  +  |  +  |  +?   | +  | +  |  +  |  +  |
+|KFR      |  +  |  +  |  +  |  +  |  +  |   -   | -  | -  |  +  |  +  |
+|FFTS     |  -  |  +  |  -  |  -  |  +  |  ++   | +  | +  |  +  |  +  |
+|FFTE     |  +  |  +  |  +  |  -  |  +  |   -   | +  | +  |  -  |  +  |
+|muFFT    |  -  |  +  |  -  |  -  |  +  |   -   | +  | -  |  +  |  -  |
+|pffft    |  +  |  +  |  +  |  -  |  -  |   -   | -  | -  |  +  |  -  |
+|KissFFT  |  +  |  +  |  +  |  -  |  -  |   +   | +  | +  |  +  |  +  |
+|meow_fft |  +  |  +  |  +  |  -  |  +  |   +   | -  | -  |  +  |  -  |
+|pocketfft|  +  |  +  |  +  |  +  |  -  |  ++   | -  | -  |  -  |  +  |
+
+(let me know if I got something wrong)
 
 #### Preleminary benchmark
 

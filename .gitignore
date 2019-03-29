@@ -1,0 +1,7 @@
+*.o
+1d
+
+# symlinks
+kissfft
+pocketfft
+meow_fft
