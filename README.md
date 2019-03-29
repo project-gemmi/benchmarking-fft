@@ -62,9 +62,9 @@ For me, radices 2 and 3 are a must, 5 is useful, 7+ could also be useful.
 
 r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).  
 "++" in the "prime" column means the Bluestein's algorithm.  
-"32b" and "64b" denote 32- and 64-bit, i.e. single and double precision data.
+"s" and "d" denote single- and double-precision data.
 
-| Library | r-3 | r-4 | r-5 | r-7 | r-8 | prime | 2D | 3D | 32b | 64b |
+| Library | r-3 | r-4 | r-5 | r-7 | r-8 | prime | 2D | 3D |  s  |  d  |
 |---------|-----|-----|-----|-----|-----|-------|----|----|-----|-----|
 |FFTW     |  +  |  +  |  +  |  +  |  +  |  ++   | +  | +  |  +  |  +  |
 |MKL      |  +  |  +  |  +  |  +  |  +  |  +?   | +  | +  |  +  |  +  |
@@ -88,11 +88,11 @@ complex-to-complex FFT.
 Here are results from the `preliminary.py` script on my laptop
 (numpy and mkl are the same code before and after `pip install mkl-fft`):
 
-  lib   120x128x96 416x256x416
-  numpy    0.196      8.742
-  mkl      0.009      0.504
-  scipy    0.106      7.091
-  pyfftw   0.060      4.442
+    lib   120x128x96 416x256x416
+    numpy    0.196      8.742
+    mkl      0.009      0.504
+    scipy    0.106      7.091
+    pyfftw   0.060      4.442
 
 Strange, the gap between MKL and FFTW should not be that big?
 
