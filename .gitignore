@@ -1,7 +1,11 @@
 *.o
+*.a
 1d
 
 # symlinks
 kissfft
 pocketfft
 meow_fft
+muFFT
+pffft
+kfr

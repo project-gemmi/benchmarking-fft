@@ -1,5 +1,6 @@
-I'm yet to do a proper benchmark.
-For now these are just notes for myself.
+## Comparison of Fast Fourier Transform Libraries
+
+(work in progress)
 
 FFTW library has an [impressive list](http://www.fftw.org/benchfft/ffts.html)
 of other FFT libraries that FFTW was benchmarked against.
@@ -38,7 +39,7 @@ First, a quick look at these projects:
 
 | Library | License | Since | Language | KLOC | Comments |
 |---------|---------|-------|----------|------|----------|
-|FFTW     | GPL or $| 1997  |          | 100+ |          |
+|FFTW3    | GPL or $| 1997  |          | 100+ |          |
 |MKL      | freeware| 20??  |          |   ?  |          |
 |KFR      | GPL or $| 2016  |  C++14   | ~20  | header-only |
 |FFTS     | MIT     | 2012  |  C       | 24   |          |
@@ -52,10 +53,10 @@ First, a quick look at these projects:
 When I was looking for a fast
 [JSON parser](https://github.com/project-gemmi/benchmarking-json/)
 all the candidates were in C++. So I'm surprised to see only one
-C++ project here. Its author wrote a post
-[why he uses C++14](https://www.kfrlib.com/blog/how-c14-and-c17-help-to-write-faster-and-better-code-real-world-examples/).
+C++ project here (its author elaborates
+[why he uses C++14](https://www.kfrlib.com/blog/how-c14-and-c17-help-to-write-faster-and-better-code-real-world-examples/)).
 
-#### Selected features.
+### Selected features
 
 I'm primarily after 3D complex-to-real and real-to-complex transforms.
 For me, radices 2 and 3 are a must, 5 is useful, 7+ could also be useful.
@@ -66,7 +67,7 @@ r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).
 
 | Library | r-3 | r-4 | r-5 | r-7 | r-8 | prime | 2D | 3D |  s  |  d  |
 |---------|-----|-----|-----|-----|-----|-------|----|----|-----|-----|
-|FFTW     |  +  |  +  |  +  |  +  |  +  |  ++   | +  | +  |  +  |  +  |
+|FFTW3    |  +  |  +  |  +  |  +  |  +  |  ++   | +  | +  |  +  |  +  |
 |MKL      |  +  |  +  |  +  |  +  |  +  |  +?   | +  | +  |  +  |  +  |
 |KFR      |  +  |  +  |  +  |  +  |  +  |   -   | -  | -  |  +  |  +  |
 |FFTS     |  -  |  +  |  -  |  -  |  +  |  ++   | +  | +  |  +  |  +  |
@@ -79,7 +80,9 @@ r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).
 
 (let me know if I got something wrong)
 
-#### Preleminary benchmark
+### Preleminary benchmark
+
+I run all the benchmarks here on i7-5600U CPU.
 
 Just to get an idea, I checked the speed of popular Python libraries
 (the underlying FFT implementations are in C/C++/Fortran).
@@ -96,6 +99,58 @@ Here are results from the `preliminary.py` script on my laptop
 
 Strange, the gap between MKL and FFTW should not be that big?
 
-#### Performance, accuracy and binary size
+### Binary size
+
+FFTW3 is a couple MB.  
+PocketFFT and muFFT are about 80kB.
+PocketFFT has more butterflies but muFFT has each in four versions (no-SIMD,
+ SSE, SSE3 and AVX).  
+pffft and meow_fft are about 32kB.
+pffft has also four versions (no-SIMD, SSE1, AltiVec and NEON),
+but only one is compiled.  
+KissFFT is only about 20kB.
+
+### 1D performance
+
+**complex-to-complex** (from running `1d.cpp` compiled with GCC8 -O3)
+
+                      n=384      n=480     n=512
+    fftw3 est.         499 ns   1538 ns    663 ns
+    fftw3 meas.        443 ns    883 ns    588 ns
+    mufft              n/a        n/a      719 ns
+    pffft             1014 ns   1329 ns   1255 ns
+    fftw3 est. NS     3254 ns   4776 ns   4095 ns
+    fftw3 meas. NS    2748 ns   3855 ns   3832 ns
+    pffft NS          2907 ns   4070 ns   3792 ns
+    pocketfft         3035 ns   3633 ns   4009 ns
+    mufft NS           n/a        n/a     4024 ns
+    meow_fft          4718 ns   5745 ns   4342 ns
+    kissfft           4929 ns   6030 ns   6553 ns
+
+NS = disabled SIMD
+
+To a first approximation, SSE1 gives 3x speedup, AVX -- 6x.
+
+Notes:
+
+* I didn't compile FFTW3, I used binaries from Ubuntu 18.04
+* `-ffast-math` doesn't seem to make a significant difference
+* When using Clang 8 instead of GCC, PocketFFT is ~12% faster.
+* All libraries are tested with single-precision numbers, except for
+  PocketFFT which supports only double-precision.
+
+I'm yet to check the accuracy of results.
+
+**real-to-complex**
 
 TODO
+
+### 2D performance
+
+TODO
+
+### 3D performance
+
+TODO
+
+### WebAssembly
