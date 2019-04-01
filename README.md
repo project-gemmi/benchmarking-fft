@@ -108,7 +108,7 @@ PocketFFT has more butterflies but muFFT has each in four versions (no-SIMD,
 pffft and meow_fft are about 32kB.
 pffft has also four versions (no-SIMD, SSE1, AltiVec and NEON),
 but only one is compiled.  
-KissFFT is only about 20kB.
+KissFFT (1D complex-to-complex) is only about 20kB.
 
 ### 1D performance
 
@@ -141,9 +141,44 @@ Notes:
 
 I'm yet to check the accuracy of results.
 
-**real-to-complex**
+**plan / setup** (`plan1d.cpp`)
 
-TODO
+Out of curiosity, I also checked how long it takes to generate a plan:
+
+                      n=480       n=512
+    fftw3 est.       17871 ns     9693 ns
+    fftw3 meas.      31463 ns    25610 ns
+    mufft              n/a       17103 ns
+    pffft            12763 ns    13730 ns
+    pocketfft         1267 ns     1274 ns
+    meow_fft         15092 ns    13878 ns
+    kissfft          15586 ns    15993 ns
+
+PocketFFT has indeed very fast plan generation.
+
+**real-to-complex** (`1d-r.cpp`)
+
+                       n=480       n=512
+    fftw3 est.         766 ns      814 ns
+    fftw3 meas.        718 ns      681 ns
+    mufft              n/a         511 ns
+    pffft              634 ns      597 ns
+    fftw3 est. NS     2442 ns     1921 ns
+    fftw3 meas. NS    1812 ns     1735 ns
+    mufft NS           n/a        2474 ns
+    pffft NS          2025 ns     1963 ns
+    pocketfft         2123 ns     2034 ns
+    kissfft           3140 ns     2985 ns
+
+NS = disabled SIMD
+
+Notes:
+
+* The output from different libraries is ordered differently.
+* For small sizes (such as the ones above) R2C in FFTW (with SIMD)
+  is slower than C2C. Strange, but I double checked the alignment of arrays
+  and the muFFT benchmark shows the same anomaly on my computer.
+
 
 ### 2D performance
 

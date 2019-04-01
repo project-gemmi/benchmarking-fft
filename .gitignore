@@ -1,6 +1,9 @@
 *.o
 *.a
 1d
+1d-r
+plan1d
+meow.c
 
 # symlinks
 kissfft
