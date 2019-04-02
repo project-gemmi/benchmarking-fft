@@ -13,7 +13,7 @@ and it is the reference point for other libraries.
 [MKL](https://software.intel.com/en-us/mkl/features/fft)
 (Intel Math Kernel Library) FFT is faster. It's not open-source, but it is freely redistributable.
 
-[KFR](https://github.com/kfrlib/kfr) claims to be even faster than MKL.
+[KFR](https://github.com/kfrlib/kfr) claims to be sometimes faster than MKL.
 
 [FFTS](https://github.com/anthonix/ffts) (South) and
 [FFTE](http://www.ffte.jp/) (East) are reported to be faster than FFTW,
@@ -41,7 +41,7 @@ First, a quick look at these projects:
 |---------|---------|-------|----------|------|----------|
 |FFTW3    | GPL or $| 1997  |          | 100+ |          |
 |MKL      | freeware| 20??  |          |   ?  |          |
-|KFR      | GPL or $| 2016  |  C++14   | ~20  | header-only |
+|KFR      | GPL or $| 2016  |  C++14   | ~20  |          |
 |FFTS     | MIT     | 2012  |  C       | 24   |          |
 |FFTE     | custom  | 20??  |  Fortran |      |          |
 |muFFT    | MIT     | 2015  |  C       | 2.5  |          |
@@ -53,8 +53,7 @@ First, a quick look at these projects:
 When I was looking for a fast
 [JSON parser](https://github.com/project-gemmi/benchmarking-json/)
 all the candidates were in C++. So I'm surprised to see only one
-C++ project here (its author elaborates
-[why he uses C++14](https://www.kfrlib.com/blog/how-c14-and-c17-help-to-write-faster-and-better-code-real-world-examples/)).
+C++ project here.
 
 ### Selected features
 
@@ -63,6 +62,7 @@ For me, radices 2 and 3 are a must, 5 is useful, 7+ could also be useful.
 
 r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).  
 "++" in the "prime" column means the Bluestein's algorithm.  
+"+/-" for radix-7 means it's only for complex-to-complex transform.  
 "s" and "d" denote single- and double-precision data.
 
 | Library | r-3 | r-4 | r-5 | r-7 | r-8 | prime | 2D | 3D |  s  |  d  |
@@ -76,9 +76,9 @@ r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).
 |pffft    |  +  |  +  |  +  |  -  |  -  |   -   | -  | -  |  +  |  -  |
 |KissFFT  |  +  |  +  |  +  |  -  |  -  |   +   | +  | +  |  +  |  +  |
 |meow_fft |  +  |  +  |  +  |  -  |  +  |   +   | -  | -  |  +  |  -  |
-|pocketfft|  +  |  +  |  +  |  +  |  -  |  ++   | -  | -  |  -  |  +  |
+|pocketfft|  +  |  +  |  +  | +/- |  -  |  ++   | -  | -  |  -  |  +  |
 
-(let me know if I got something wrong)
+(let me know if I got anything wrong)
 
 ### Preleminary benchmark
 
@@ -112,6 +112,9 @@ KissFFT (1D complex-to-complex) is only about 20kB.
 
 ### 1D performance
 
+I'm benchmarking primarily lightweight libraries, and FFTW as the reference
+point.
+
 **complex-to-complex** (from running `1d.cpp` compiled with GCC8 -O3)
 
                       n=384      n=480     n=512
@@ -122,8 +125,8 @@ KissFFT (1D complex-to-complex) is only about 20kB.
     fftw3 est. NS     3254 ns   4776 ns   4095 ns
     fftw3 meas. NS    2748 ns   3855 ns   3832 ns
     pffft NS          2907 ns   4070 ns   3792 ns
-    pocketfft         3035 ns   3633 ns   4009 ns
     mufft NS           n/a        n/a     4024 ns
+    pocketfft         3035 ns   3633 ns   4009 ns
     meow_fft          4718 ns   5745 ns   4342 ns
     kissfft           4929 ns   6030 ns   6553 ns
 
@@ -182,10 +185,31 @@ Notes:
 
 ### 2D performance
 
-TODO
+**complex-to-complex** (`2d.cpp`)
+
+                   256x256       480x480
+    fftw3 est.     1197398 ns   3002102 ns
+    fftw3 meas.     306469 ns   1497117 ns
+    mufft           259492 ns      n/a
+    fftw3 est. NS  1558822 ns   5582161 ns
+    fftw3 meas. NS 1033311 ns   4535623 ns
+    mufft NS       1091580 ns      n/a
+    kissfft        1583362 ns   6902631 ns
+
 
 ### 3D performance
 
-TODO
+**complex-to-complex** (`3d.cpp`)
+
+                   128x128x320  256x256x256   416x256x416
+    fftw3 est.        41 ms       1171 ms       3152 ms
+    fftw3 meas.       39 ms        194 ms        793 ms
+    fftw3 est. NS    253 ms        987 ms       2720 ms
+    fftw3 meas. NS   125 ms        443 ms       1476 ms
+    kissfft          313 ms       1221 ms       5756 ms
+
+**complex-to-complex** (`3d-r.cpp`)
 
 ### WebAssembly
+
+TODO
