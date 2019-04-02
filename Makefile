@@ -27,6 +27,9 @@ plan1d: plan1d.cpp $(OBJ)
 3d: 3d.cpp kissfft.o kissfftnd.o
 	$(CXX) $(FLAGS) $< kissfftnd.o kissfft.o -o $@ -lfftw3f $(LIBBENCHMARK) -pthread
 
+3d-r: 3d-r.cpp kissfft.o kissfftndr.o kissfftnd.o kissfftr.o
+	$(CXX) $(FLAGS) $< kissfftndr.o kissfftnd.o kissfftr.o kissfft.o -o $@ -lfftw3f $(LIBBENCHMARK) -pthread
+
 pocketfft.o: pocketfft/pocketfft.c pocketfft/pocketfft.h
 	$(CC) $(FLAGS) -c $< -o $@
 
@@ -35,6 +38,8 @@ kissfft.o: kissfft/kiss_fft.c kissfft/kiss_fft.h
 kissfftr.o: kissfft/tools/kiss_fftr.c
 	$(CC) $(FLAGS) -Ikissfft -c $< -o $@
 kissfftnd.o: kissfft/tools/kiss_fftnd.c
+	$(CC) $(FLAGS) -Ikissfft -c $< -o $@
+kissfftndr.o: kissfft/tools/kiss_fftndr.c
 	$(CC) $(FLAGS) -Ikissfft -c $< -o $@
 
 pffft.o: pffft/pffft.c pffft/pffft.h

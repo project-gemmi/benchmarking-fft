@@ -210,6 +210,14 @@ Notes:
 
 **complex-to-complex** (`3d-r.cpp`)
 
+                 128x128x320   256x256x256
+    fftw3 est.       28 ms        219 ms
+    fftw3 meas.      27 ms         98 ms
+    fftw3 est. NS    88 ms        285 ms
+    fftw3 meas. NS   62 ms        206 ms
+    kissfft         121 ms        475 ms
+
+
 ### WebAssembly
 
 TODO
