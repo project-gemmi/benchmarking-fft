@@ -1,4 +1,4 @@
-// 1D C2C FFT microbenchmark
+// 3D C2C FFT microbenchmark
 
 #include <complex>
 #include <cassert>

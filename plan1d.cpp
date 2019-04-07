@@ -1,4 +1,4 @@
-// 1D C2C FFT microbenchmark
+// FFT plan generation microbenchmark
 
 #include <complex>
 #include <cassert>

@@ -113,7 +113,14 @@ KissFFT (1D complex-to-complex) is only about 20kB.
 ### 1D performance
 
 I'm benchmarking primarily lightweight libraries, and FFTW as the reference
-point.
+point. All the benchmarks on this page are:
+
+    Run on (4 X 3200 MHz CPU s)
+    CPU Caches:
+      L1 Data 32K (x2)
+      L1 Instruction 32K (x2)
+      L2 Unified 256K (x2)
+      L3 Unified 4096K (x1)
 
 **complex-to-complex** (from running `1d.cpp` compiled with GCC8 -O3)
 
@@ -217,6 +224,27 @@ Notes:
     fftw3 meas. NS   62 ms        206 ms
     kissfft         121 ms        475 ms
 
+**matrix transpose** (`transpose.cpp`)
+
+NxN 2D FFT can be composed of 2N 1D FFTs of length N
+and one transposition. NxNxN 3D FFT is made of 3N^2 1D FFTs
+and two transpositions. So I was wondering how long it takes
+to transpose a 3D matrix. I check here matrix of `complex<float>`.
+
+                256x256x256
+    assign          22 ms
+    naive zyx      204 ms
+    naive xzy       89 ms
+    naive yxz       25 ms
+    naive zxy      104 ms
+    naive yzx      202 ms
+    tiled zxy       51 ms
+
+
+Are two XYZ -> ZXY transpositions all that is needed?  
+Would in-place transpose be faster?  
+As with FFT, SIMD instructions could make it faster
+(SSE has macro `_MM_TRANSPOSE4_PS`), but how much?
 
 ### WebAssembly
 
