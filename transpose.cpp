@@ -110,6 +110,27 @@ static void bm_tiled_zxy(benchmark::State& state) {
   }
 }
 
+static void bm_inplace_zxy(benchmark::State& state) {
+  std::vector<char> is_swapped(input.size());
+  const int N = 8;
+  while (state.KeepRunning()) {
+    std::fill(is_swapped.begin(), is_swapped.end(), 0);
+    int xy = x * y;
+    for (int i = 0; i < xy; i += N)
+      for (int k = 0; k < z; k += N)
+        for (int i2 = i; i2 < std::min(i + N, xy); ++i2)
+          for (int k2 = k; k2 < std::min(k + N, z); ++k2) {
+            int n1 = i2 * z + k2;
+            if (!is_swapped[n1]) {
+              int n2 = i2 + k2 * xy;
+              std::swap(input[n2], input[n1]);
+              is_swapped[n2] = 1;
+            }
+          }
+    benchmark::DoNotOptimize(input);
+  }
+}
+
 int main(int argc, char** argv) {
   if (argc < 4) {
     printf("Call it with 3D size as arguments.\n");
@@ -131,6 +152,7 @@ int main(int argc, char** argv) {
   benchmark::RegisterBenchmark("naive zxy", bm_naive_zxy);
   benchmark::RegisterBenchmark("naive yzx", bm_naive_yzx);
   benchmark::RegisterBenchmark("tiled zxy", bm_tiled_zxy);
+  benchmark::RegisterBenchmark("in-place zxy", bm_inplace_zxy);
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
 }

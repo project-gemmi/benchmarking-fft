@@ -236,13 +236,14 @@ to transpose a 3D matrix. I check here matrix of `complex<float>`.
     naive zyx      204 ms
     naive xzy       89 ms
     naive yxz       25 ms
-    naive zxy      104 ms
+    naive zxy       90 ms
     naive yzx      202 ms
-    tiled zxy       51 ms
+    tiled zxy       49 ms
+    in-place zxy    91 ms
 
 
+Only the last transpose is in-place (and it is also tiled).  
 Are two XYZ -> ZXY transpositions all that is needed?  
-Would in-place transpose be faster?  
 As with FFT, SIMD instructions could make it faster
 (SSE has macro `_MM_TRANSPOSE4_PS`), but how much?
 
