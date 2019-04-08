@@ -124,18 +124,18 @@ point. All the benchmarks on this page are:
 
 **complex-to-complex** (from running `1d.cpp` compiled with GCC8 -O3)
 
-                      n=384      n=480     n=512
-    fftw3 est.         499 ns   1538 ns    663 ns
-    fftw3 meas.        443 ns    883 ns    588 ns
-    mufft              n/a        n/a      719 ns
-    pffft             1014 ns   1329 ns   1255 ns
-    fftw3 est. NS     3254 ns   4776 ns   4095 ns
-    fftw3 meas. NS    2748 ns   3855 ns   3832 ns
-    pffft NS          2907 ns   4070 ns   3792 ns
-    mufft NS           n/a        n/a     4024 ns
-    pocketfft         3035 ns   3633 ns   4009 ns
-    meow_fft          4718 ns   5745 ns   4342 ns
-    kissfft           4929 ns   6030 ns   6553 ns
+                       n=256      n=384     n=480     n=512
+    fftw3 est.         321 ns     499 ns   1538 ns    663 ns
+    fftw3 meas.        274 ns     443 ns    883 ns    588 ns
+    mufft              325 ns     n/a        n/a      719 ns
+    pffft              585 ns    1014 ns   1329 ns   1255 ns
+    fftw3 est. NS     1826 ns    3254 ns   4776 ns   4095 ns
+    fftw3 meas. NS    1699 ns    2748 ns   3855 ns   3832 ns
+    mufft NS          1784 ns     n/a        n/a     4024 ns
+    pffft NS          1768 ns    2907 ns   4070 ns   3792 ns
+    pocketfft         1690 ns    3035 ns   3633 ns   4009 ns
+    meow_fft          2120 ns    4718 ns   5745 ns   4342 ns
+    kissfft           2536 ns    4929 ns   6030 ns   6553 ns
 
 NS = disabled SIMD
 
