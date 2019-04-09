@@ -10,7 +10,7 @@ FLAGS=-Wall -Wextra -pedantic -O3 #-ffast-math
 all: 1d 1d-r meow_fft.o plan1d 2d 3d 3d-r transpose
 
 OBJ_2D=kissfft.o libmuFFT.a libmuFFT-sse.a libmuFFT-sse3.a libmuFFT-avx.a
-OBJ=pocketfft.o pffft.o $(OBJ_2D)
+OBJ=pocketfft.o pffft.o meow_fft.o $(OBJ_2D)
 
 1d: 1d.cpp $(OBJ)
 	$(CXX) $(FLAGS) $< $(OBJ) -o $@ -lfftw3f $(LIBBENCHMARK)

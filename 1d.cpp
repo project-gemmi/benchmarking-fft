@@ -11,7 +11,6 @@
 #include "pocketfft/pocketfft.h"
 #include "pffft/pffft.h"
 #include "muFFT/fft.h"
-#define MEOW_FFT_IMPLEMENTATION 1
 #include "meow_fft/meow_fft.h"
 
 static const bool no_simd = false;

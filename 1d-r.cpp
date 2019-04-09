@@ -11,6 +11,7 @@
 #include "pocketfft/pocketfft.h"
 #include "pffft/pffft.h"
 #include "muFFT/fft.h"
+#include "meow_fft/meow_fft.h"
 
 static const bool no_simd = false;
 
@@ -71,6 +72,19 @@ static void bm_pocketfft(benchmark::State& state) {
   destroy_rfft_plan(plan);
 }
 
+static void bm_meowfft(benchmark::State& state) {
+  std::vector<std::complex<float>> vout(input.size());
+  Meow_FFT_Complex* out = reinterpret_cast<Meow_FFT_Complex*>(&vout[0]);
+  size_t workset_bytes = meow_fft_generate_workset_real(input.size(), NULL);
+  Meow_FFT_Workset_Real* cfg = (Meow_FFT_Workset_Real*) malloc(workset_bytes);
+  meow_fft_generate_workset_real(input.size(), cfg);
+  while (state.KeepRunning()) {
+    meow_fft_real(cfg, input.data(), out);
+    benchmark::DoNotOptimize(out);
+  }
+  free(cfg);
+}
+
 // only for N=(2^a)*(3^b)*(5^c), a >= 5, b >=0, c >= 0
 // input/output must be aligned to 16 bytes
 static void bm_pffft(benchmark::State& state) {
@@ -84,7 +98,7 @@ static void bm_pffft(benchmark::State& state) {
   if (cfg == 0)
     return;
   while (state.KeepRunning()) {
-    pffft_transform(cfg, in, out, work, PFFFT_FORWARD);
+    pffft_transform_ordered(cfg, in, out, work, PFFFT_FORWARD);
     benchmark::DoNotOptimize(out);
   }
   pffft_aligned_free(work);
@@ -136,6 +150,7 @@ int main(int argc, char** argv) {
   benchmark::RegisterBenchmark("mufft", bm_mufft);
   benchmark::RegisterBenchmark("pffft", bm_pffft);
   benchmark::RegisterBenchmark("pocketfft", bm_pocketfft);
+  benchmark::RegisterBenchmark("meow_fft", bm_meowfft);
   benchmark::RegisterBenchmark("kissfft", bm_kissfft);
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();

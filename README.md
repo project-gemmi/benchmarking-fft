@@ -78,6 +78,9 @@ r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).
 |meow_fft |  +  |  +  |  +  |  -  |  +  |   +   | -  | -  |  +  |  -  |
 |pocketfft|  +  |  +  |  +  | +/- |  -  |  ++   | -  | -  |  -  |  +  |
 
+Additionally, for pffft compiled with enabled SIMD the fft size must be
+a multiple of 16 for complex FFTs and 32 for real FFTs.
+
 (let me know if I got anything wrong)
 
 ### Preleminary benchmark
@@ -178,6 +181,7 @@ PocketFFT has indeed very fast plan generation.
     mufft NS           n/a        2474 ns
     pffft NS          2025 ns     1963 ns
     pocketfft         2123 ns     2034 ns
+    meow_fftt         3591 ns     2660 ns
     kissfft           3140 ns     2985 ns
 
 NS = disabled SIMD
@@ -244,8 +248,7 @@ to transpose a 3D matrix. I check here matrix of `complex<float>`.
 
 Only the last transpose is in-place (and it is also tiled).  
 Are two XYZ -> ZXY transpositions all that is needed?  
-As with FFT, SIMD instructions could make it faster
-(SSE has macro `_MM_TRANSPOSE4_PS`), but how much?
+As with FFT, SIMD instructions could make it faster, but how much?
 
 ### WebAssembly
 
