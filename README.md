@@ -102,6 +102,9 @@ Here are results from the `preliminary.py` script on my laptop
 
 Strange, the gap between MKL and FFTW should not be that big?
 
+The 416x256x416 transform result from `3d.cpp` (see below) are:
+0.65s for FFTW (measured), 1.4s for FFTW (estimated) and 4.3s for kissfft.
+
 ### Binary size
 
 FFTW3 is a couple MB.  
@@ -198,14 +201,15 @@ Notes:
 
 **complex-to-complex** (`2d.cpp`)
 
-                   256x256       480x480
-    fftw3 est.     1197398 ns   3002102 ns
-    fftw3 meas.     306469 ns   1497117 ns
-    mufft           259492 ns      n/a
-    fftw3 est. NS  1558822 ns   5582161 ns
-    fftw3 meas. NS 1033311 ns   4535623 ns
-    mufft NS       1091580 ns      n/a
-    kissfft        1583362 ns   6902631 ns
+                   256x256    480x480
+    fftw3 est.     1197 us    3002 us
+    fftw3 meas.     306 us    1497 us
+    mufft           259 us      n/a
+    fftw3 est. NS  1559 us    5582 us
+    fftw3 meas. NS 1033 us    4536 us
+    mufft NS       1092 us      n/a
+    pocketfft      1285 us    4311 us
+    kissfft        1583 us    6903 us
 
 
 ### 3D performance
