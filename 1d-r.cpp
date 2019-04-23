@@ -63,13 +63,13 @@ static void bm_kissfft(benchmark::State& state) {
 static void bm_pocketfft(benchmark::State& state) {
   std::vector<std::complex<double>> vout(inputd.size());
   double* out = reinterpret_cast<double*>(&vout[0]);
-  rfft_plan plan = make_rfft_plan(inputd.size());
+  pocketfft_plan_r plan = pocketfft_make_plan_r(inputd.size());
   while (state.KeepRunning()) {
     memcpy(out, inputd.data(), inputd.size() * sizeof(double));
-    rfft_forward(plan, reinterpret_cast<double*>(&vout[0]), 1.);
+    pocketfft_forward_r(plan, reinterpret_cast<double*>(&vout[0]), 1.);
     benchmark::DoNotOptimize(vout);
   }
-  destroy_rfft_plan(plan);
+  pocketfft_delete_plan_r(plan);
 }
 
 static void bm_meowfft(benchmark::State& state) {

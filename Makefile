@@ -5,7 +5,7 @@ CXX=g++-8
 #CC=clang-8
 #CXX=clang++-8
 LIBBENCHMARK=/usr/local/lib/libbenchmark.a -pthread
-FLAGS=-Wall -Wextra -pedantic -O3 #-ffast-math
+FLAGS=-Wall -Wextra -pedantic -I. -O3 #-ffast-math
 
 all: 1d 1d-r meow_fft.o plan1d 2d 3d 3d-r transpose
 

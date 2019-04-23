@@ -51,9 +51,9 @@ static void bm_kissfft(benchmark::State& state) {
 
 static void bm_pocketfft(benchmark::State& state) {
   while (state.KeepRunning()) {
-    cfft_plan plan = make_cfft_plan(N);
+    pocketfft_plan_c plan = pocketfft_make_plan_c(N);
     benchmark::DoNotOptimize(plan);
-    destroy_cfft_plan(plan);
+    pocketfft_delete_plan_c(plan);
   }
 }
 
