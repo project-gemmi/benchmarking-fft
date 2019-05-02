@@ -40,12 +40,12 @@ static void bm_fftw3_est(benchmark::State& state) {
 
 static void bm_pocketfft(benchmark::State& state) {
   std::vector<std::complex<float>> vout(x * y);
-  uint64_t n[]={(uint64_t)x, (uint64_t)y};
-  uint64_t stride[]={(uint64_t)y,1};
-  uint64_t axes[]={0,1};
+  size_t n[]={(size_t)x, (size_t)y};
+  ptrdiff_t stride[]={(ptrdiff_t)y,1};
+  size_t axes[]={0,1};
   while (state.KeepRunning()) {
-    pocketfft_general_c(2, n, stride, stride, 2, axes, 1, 0,
-                        input, vout.data(), 1.);
+    pocketfft_complex(2, n, stride, stride, 2, axes, 1,
+                      input, vout.data(), 1., 0);
     benchmark::DoNotOptimize(vout);
   }
 }
