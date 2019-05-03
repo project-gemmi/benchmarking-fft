@@ -48,12 +48,14 @@ First, a quick look at these projects:
 |pffft    | BSD-like| 2011  |  C       | 1.5  |          |
 |KissFFT  | 3-BSD   | 2003  |  C       | 0.7+1.1 | 1.1 for `tools/` |
 |meow_fft | 0-BSD   | 2017  |  C       | 1.9  | single header |
-|pocketfft| 3-BSD   | 2010? |  C       | 2.0  |          |
+|pocketfft| 3-BSD   | 2010? |  C++     | 2.2  |          |
+
+Note: pocketfft was originally in C, but now the repository has a ``cpp``
+branch and I'm migrating my benchmarks to it.
 
 When I was looking for a fast
 [JSON parser](https://github.com/project-gemmi/benchmarking-json/)
-all the candidates were in C++. So I'm surprised to see only one
-C++ project here.
+all the candidates were in C++, but here it's mostly C.
 
 ### Selected features
 
@@ -76,7 +78,7 @@ r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).
 |pffft    |  +  |  +  |  +  |  -  |  -  |   -   | -  | -  |  +  |  -  |
 |KissFFT  |  +  |  +  |  +  |  -  |  -  |   +   | +  | +  |  +  |  +  |
 |meow_fft |  +  |  +  |  +  |  -  |  +  |   +   | -  | -  |  +  |  -  |
-|pocketfft|  +  |  +  |  +  | +/- |  -  |  ++   | -  | -  |  -  |  +  |
+|pocketfft|  +  |  +  |  +  | +/- |  -  |  ++   | +  | +  |  +  |  +  |
 
 Additionally, for pffft compiled with enabled SIMD the fft size must be
 a multiple of 16 for complex FFTs and 32 for real FFTs.
@@ -101,14 +103,13 @@ Here are results from the `preliminary.py` script on my laptop
     pyfftw   0.060      4.442
 
 Strange, the gap between MKL and FFTW should not be that big?
-
 The 416x256x416 transform result from `3d.cpp` (see below) are:
 0.65s for FFTW (measured), 1.4s for FFTW (estimated) and 4.3s for kissfft.
 
 ### Binary size
 
 FFTW3 is a couple MB.  
-PocketFFT and muFFT are about 80kB.
+PocketFFT (C version) and muFFT are about 80kB.
 PocketFFT has more butterflies but muFFT has each in four versions (no-SIMD,
  SSE, SSE3 and AVX).  
 pffft and meow_fft are about 32kB.
@@ -153,7 +154,7 @@ Notes:
 * `-ffast-math` doesn't seem to make a significant difference
 * When using Clang 8 instead of GCC, PocketFFT is ~12% faster.
 * All libraries are tested with single-precision numbers, except for
-  PocketFFT which supports only double-precision.
+  PocketFFT (C version) which supports only double-precision.
 
 I'm yet to check the accuracy of results.
 
@@ -205,25 +206,29 @@ Notes:
     fftw3 est.     1197 us    3002 us
     fftw3 meas.     306 us    1497 us
     mufft           259 us      n/a
+    pocketfft       543 us    2270 us
     fftw3 est. NS  1559 us    5582 us
     fftw3 meas. NS 1033 us    4536 us
     mufft NS       1092 us      n/a
-    pocketfft      1285 us    4311 us
-    kissfft        1583 us    6903 us
+    kissfft        1583 us    5766 us
 
+Here, PocketFFT is compiled with SSE1 support only.
+It is significantly faster when compiled with AVX support.
+I haven't tried AVX-512.
 
 ### 3D performance
 
 **complex-to-complex** (`3d.cpp`)
 
                    128x128x320  256x256x256   416x256x416
-    fftw3 est.        41 ms       1171 ms       3152 ms
-    fftw3 meas.       39 ms        194 ms        793 ms
-    fftw3 est. NS    253 ms        987 ms       2720 ms
+    fftw3 est.        41 ms        730 ms       1860 ms
+    fftw3 meas.       39 ms        162 ms        727 ms
+    pocketfft         79 ms        264 ms        939 ms
+    fftw3 est. NS    253 ms        987 ms       2016 ms
     fftw3 meas. NS   125 ms        443 ms       1476 ms
-    kissfft          313 ms       1221 ms       5756 ms
+    kissfft          216 ms        785 ms       4235 ms
 
-**complex-to-complex** (`3d-r.cpp`)
+**real-to-complex** (`3d-r.cpp`)
 
                  128x128x320   256x256x256
     fftw3 est.       28 ms        219 ms

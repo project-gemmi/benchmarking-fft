@@ -3,6 +3,7 @@
 #include <complex>
 #include <cassert>
 #include <benchmark/benchmark.h>
+#include <pocketfft/pocketfft.h>
 
 #include <fftw3.h>
 #include "kissfft/kiss_fftnd.h"
@@ -38,6 +39,19 @@ static void bm_fftw3_est(benchmark::State& state) {
   bm_fftw3(state, FFTW_ESTIMATE);
 }
 
+static void bm_pocketfft(benchmark::State& state) {
+  std::vector<std::complex<float>> vout(x * y * z);
+  size_t n[]={(size_t)x, (size_t)y, (size_t)z};
+  ptrdiff_t s = sizeof(input[0]);
+  ptrdiff_t stride[]={y*z*s, z*s, s};
+  size_t axes[]={0,1,2};
+  while (state.KeepRunning()) {
+    pocketfft_complex(3, n, stride, stride, 3, axes, 1,
+                      input.data(), vout.data(), 1., 0);
+    benchmark::DoNotOptimize(vout);
+  }
+}
+
 static void bm_kissfft(benchmark::State& state) {
   std::vector<std::complex<float>> vout(x * y * z);
   kiss_fft_cpx* out = reinterpret_cast<kiss_fft_cpx*>(&vout[0]);
@@ -65,6 +79,7 @@ int main(int argc, char** argv) {
 
   benchmark::RegisterBenchmark("fftw3 est.", bm_fftw3_est);
   benchmark::RegisterBenchmark("fftw3 meas.", bm_fftw3_meas);
+  benchmark::RegisterBenchmark("pocketfft", bm_pocketfft);
   benchmark::RegisterBenchmark("kissfft", bm_kissfft);
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
