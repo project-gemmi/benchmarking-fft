@@ -218,9 +218,13 @@ I haven't tried AVX-512.
 
 ### 3D performance
 
+Here I also tried Intel MKL 2019 through its FFTW interface.
+No changes in the source code, only the linking command needs to be modified.
+
 **complex-to-complex** (`3d.cpp`)
 
                    128x128x320  256x256x256   416x256x416
+    MKL               38 ms        155 ms        492 ms
     fftw3 est.        41 ms        730 ms       1860 ms
     fftw3 meas.       39 ms        162 ms        727 ms
     pocketfft         79 ms        264 ms        939 ms
@@ -230,20 +234,23 @@ I haven't tried AVX-512.
 
 **real-to-complex** (`3d-r.cpp`)
 
+PocketFFT compiled with AVX support is as fast as FFTW3.
+
                  128x128x320   256x256x256
+    MKL              17 ms         61 ms
     fftw3 est.       28 ms        219 ms
     fftw3 meas.      27 ms         98 ms
     pocketfft        38 ms        126 ms
+    pocketfft AVX    30 ms         97 ms
     fftw3 est. NS    88 ms        285 ms
     fftw3 meas. NS   62 ms        206 ms
     kissfft         112 ms        436 ms
 
 **matrix transpose** (`transpose.cpp`)
 
-NxN 2D FFT can be composed of 2N 1D FFTs of length N
-and one transposition. NxNxN 3D FFT is made of 3N^2 1D FFTs
-and two transpositions. So I was wondering how long it takes
-to transpose a 3D matrix. I check here matrix of `complex<float>`.
+Out of curiosity, I've also checked how long it takes to transpose
+a 3D matrix of type `complex<float>`.
+Only the last transpose is in-place (and it is also tiled).
 
                 256x256x256
     assign          22 ms
@@ -255,10 +262,6 @@ to transpose a 3D matrix. I check here matrix of `complex<float>`.
     tiled zxy       49 ms
     in-place zxy    91 ms
 
-
-Only the last transpose is in-place (and it is also tiled).  
-Are two XYZ -> ZXY transpositions all that is needed?  
-As with FFT, SIMD instructions could make it faster, but how much?
 
 ### WebAssembly
 

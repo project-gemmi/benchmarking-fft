@@ -7,6 +7,7 @@ CXX=g++-8
 LIBBENCHMARK=/usr/local/lib/libbenchmark.a -pthread
 LIBFFTW=-lfftw3f
 #LIBFFTW=/home/wojdyr/local/src/fftw-3.3.8/.libs/libfftw3f.a
+#LIBFFTW=-Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_ilp64.a ${MKLROOT}/lib/intel64/libmkl_sequential.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread -lm -ldl
 FLAGS=-Wall -Wextra -pedantic -I. -O3 #-ffast-math
 
 all: 1d 1d-r meow_fft.o plan1d 2d 3d 3d-r transpose
