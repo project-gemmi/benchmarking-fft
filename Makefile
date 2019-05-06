@@ -26,11 +26,11 @@ plan1d: plan1d.cpp $(OBJ)
 2d: 2d.cpp $(OBJ_2D) kissfftnd.o
 	$(CXX) $(FLAGS) $< kissfftnd.o $(OBJ_2D) -o $@ $(LIBFFTW) $(LIBBENCHMARK)
 
-3d: 3d.cpp kissfft.o pocketfft.o kissfftnd.o
+3d: 3d.cpp pocketfft.o kissfft.o kissfftnd.o
 	$(CXX) $(FLAGS) $< pocketfft.o kissfftnd.o kissfft.o -o $@ $(LIBFFTW) $(LIBBENCHMARK)
 
-3d-r: 3d-r.cpp kissfft.o kissfftndr.o kissfftnd.o kissfftr.o
-	$(CXX) $(FLAGS) $< kissfftndr.o kissfftnd.o kissfftr.o kissfft.o -o $@ $(LIBFFTW) $(LIBBENCHMARK)
+3d-r: 3d-r.cpp pocketfft.o kissfft.o kissfftndr.o kissfftnd.o kissfftr.o
+	$(CXX) $(FLAGS) $< pocketfft.o kissfftndr.o kissfftnd.o kissfftr.o kissfft.o -o $@ $(LIBFFTW) $(LIBBENCHMARK)
 
 transpose: transpose.cpp
 	$(CXX) $(FLAGS) $< -o $@ $(LIBBENCHMARK)

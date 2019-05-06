@@ -4,7 +4,6 @@
 #include <cassert>
 #include <benchmark/benchmark.h>
 #include <pocketfft/pocketfft.h>
-
 #include <fftw3.h>
 #include "kissfft/kiss_fftnd.h"
 
