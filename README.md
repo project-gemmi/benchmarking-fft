@@ -236,15 +236,15 @@ No changes in the source code, only the linking command needs to be modified.
 
 PocketFFT compiled with AVX support is as fast as FFTW3.
 
-                 128x128x320   256x256x256    416x256x416
-    MKL              17 ms         61 ms         185 ms
-    fftw3 est.       28 ms        219 ms         605 ms
-    fftw3 meas.      27 ms         98 ms         336 ms
-    pocketfft AVX    30 ms         97 ms         311 ms
-    pocketfft SSE    38 ms        126 ms         393 ms
-    fftw3 est. NS    88 ms        285 ms         770 ms
-    fftw3 meas. NS   62 ms        206 ms         715 ms
-    kissfft         112 ms        436 ms        2078 ms
+                 128x128x320   256x256x256    416x256x416  90x128x120
+    MKL              17 ms         61 ms         185 ms        4 ms
+    fftw3 est.       28 ms        219 ms         605 ms       10 ms
+    fftw3 meas.      27 ms         98 ms         336 ms        7 ms
+    pocketfft AVX    30 ms         97 ms         311 ms        8 ms
+    pocketfft SSE    38 ms        126 ms         393 ms       10 ms
+    fftw3 est. NS    88 ms        285 ms         770 ms       19 ms
+    fftw3 meas. NS   62 ms        206 ms         715 ms       15 ms
+    kissfft         112 ms        436 ms        2078 ms       27 ms
 
 **matrix transpose** (`transpose.cpp`)
 
