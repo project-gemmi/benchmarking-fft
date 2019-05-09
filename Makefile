@@ -4,40 +4,46 @@ CC=gcc-8
 CXX=g++-8
 #CC=clang-8
 #CXX=clang++-8
+
 LIBBENCHMARK=/usr/local/lib/libbenchmark.a -pthread
+
 LIBFFTW=-lfftw3f
-#LIBFFTW=/home/wojdyr/local/src/fftw-3.3.8/.libs/libfftw3f.a
+#LIBFFTW=${HOME}/local/src/fftw-3.3.8/.libs/libfftw3f.a
 #LIBFFTW=-Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_ilp64.a ${MKLROOT}/lib/intel64/libmkl_sequential.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread -lm -ldl
-FLAGS=-Wall -Wextra -pedantic -I. -O3 #-ffast-math
+
+ARCH=#-march=native
+FLAGS=-Wall -Wextra -pedantic -I. -O3 $(ARCH)
+
+LIBMU=libmuFFT.a libmuFFT-sse.a libmuFFT-sse3.a libmuFFT-avx.a
+OBJ_3D=kissfftnd.o kissfft.o
+OBJ_1D=$(LIBMU) kissfft.o pffft.o meow_fft.o
+LIBS=$(LIBFFTW) $(LIBBENCHMARK)
 
 all: 1d 1d-r meow_fft.o plan1d 2d 3d 3d-r transpose
 
-OBJ_2D=pocketfft.o kissfft.o libmuFFT.a libmuFFT-sse.a libmuFFT-sse3.a libmuFFT-avx.a
-OBJ=pffft.o meow_fft.o $(OBJ_2D)
+1d: 1d.cpp $(OBJ_1D)
+	$(CXX) $(FLAGS) $< $(OBJ_1D) -o $@ $(LIBS)
 
-1d: 1d.cpp $(OBJ)
-	$(CXX) $(FLAGS) $< $(OBJ) -o $@ $(LIBFFTW) $(LIBBENCHMARK)
+plan1d: plan1d.cpp $(OBJ_1D)
+	$(CXX) $(FLAGS) $< $(OBJ_1D) -o $@ $(LIBS)
 
-plan1d: plan1d.cpp $(OBJ)
-	$(CXX) $(FLAGS) $< $(OBJ) -o $@ $(LIBFFTW) $(LIBBENCHMARK)
+1d-r: 1d-r.cpp $(OBJ_1D) kissfftr.o
+	$(CXX) $(FLAGS) $< kissfftr.o $(OBJ_1D) -o $@ $(LIBS)
 
-1d-r: 1d-r.cpp $(OBJ) kissfftr.o
-	$(CXX) $(FLAGS) $< kissfftr.o $(OBJ) -o $@ $(LIBFFTW) $(LIBBENCHMARK)
+2d: 2d.cpp $(LIBMU) $(OBJ_3D) 
+	$(CXX) $(FLAGS) $< $(LIBMU) $(OBJ_3D) -o $@ $(LIBS)
 
-2d: 2d.cpp $(OBJ_2D) kissfftnd.o
-	$(CXX) $(FLAGS) $< kissfftnd.o $(OBJ_2D) -o $@ $(LIBFFTW) $(LIBBENCHMARK)
+3d: 3d.cpp $(OBJ_3D)
+	$(CXX) $(FLAGS) $< $(OBJ_3D) -o $@ $(LIBS)
 
-3d: 3d.cpp pocketfft.o kissfft.o kissfftnd.o
-	$(CXX) $(FLAGS) $< pocketfft.o kissfftnd.o kissfft.o -o $@ $(LIBFFTW) $(LIBBENCHMARK)
-
-3d-r: 3d-r.cpp pocketfft.o kissfft.o kissfftndr.o kissfftnd.o kissfftr.o
-	$(CXX) $(FLAGS) $< pocketfft.o kissfftndr.o kissfftnd.o kissfftr.o kissfft.o -o $@ $(LIBFFTW) $(LIBBENCHMARK)
+3d-r: 3d-r.cpp $(OBJ_3D) kissfftndr.o kissfftr.o
+	$(CXX) $(FLAGS) $< kissfftndr.o kissfftr.o $(OBJ_3D) -o $@ $(LIBS)
 
 transpose: transpose.cpp
 	$(CXX) $(FLAGS) $< -o $@ $(LIBBENCHMARK)
 
 pocketfft.o: pocketfft/pocketfft.cc pocketfft/pocketfft.h
-	$(CXX) $(FLAGS) -c $< -o $@
+	$(CXX) $(FLAGS) -march=native -c $< -o $@
 
 kissfft.o: kissfft/kiss_fft.c kissfft/kiss_fft.h
 	$(CC) $(FLAGS) -c $< -o $@
