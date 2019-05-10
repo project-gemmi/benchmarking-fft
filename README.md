@@ -1,7 +1,5 @@
 ## Comparison of Fast Fourier Transform Libraries
 
-(work in progress)
-
 FFTW library has an [impressive list](http://www.fftw.org/benchfft/ffts.html)
 of other FFT libraries that FFTW was benchmarked against.
 Unfortunately, this list has not been updated since about 2005,
@@ -11,25 +9,37 @@ FFTW is not the fastest one anymore, but it still has many advantages
 and it is the reference point for other libraries.
 
 [MKL](https://software.intel.com/en-us/mkl/features/fft)
-(Intel Math Kernel Library) FFT is faster. It's not open-source, but it is freely redistributable.
+(Intel Math Kernel Library) FFT is significantly faster.
+It's not open-source, but it is freely redistributable.
+MKL has fantastic compatibility layer with FFTW
+(no need to change the code, you just link it with MKL instead of fftw3)
+and with NumPy (no need to change the code, just do `pip install mkl-fft`).
 
-[KFR](https://github.com/kfrlib/kfr) claims to be sometimes faster than MKL.
+[KFR](https://github.com/kfrlib/kfr) also claims to be faster than FFTW,
+but I read that in the latest version (3.0) it requires Clang to for
+top performance, so I didn't benchmark it.
 
 [FFTS](https://github.com/anthonix/ffts) (South) and
 [FFTE](http://www.ffte.jp/) (East) are reported to be faster than FFTW,
-at least in some cases.
+at least in some cases. I'd benchmark them if I had more time.
 
 [muFFT](https://github.com/Themaister/muFFT)
 and [pffft](https://bitbucket.org/jpommier/pffft)
 seem to have performance comparable to FFTW while being much simpler.
 
-Libraries that are not SIMD-optimized, such as
+Libraries that are not vectorized such as
 [KissFFT](https://github.com/mborgerding/kissfft),
 [meow_fft](https://github.com/JodiTheTigger/meow_fft)
-and [pocketfft](https://gitlab.mpcdf.mpg.de/mtr/pocketfft)
 tend to be slower, but are also worth considering.
 
-I don't plan to use GPU for computations, so I won't cover here
+[PocketFFT](https://gitlab.mpcdf.mpg.de/mtr/pocketfft)
+is vectorized only for multi-dimensional transforms (or for doing
+multiple 1D transforms). Unlike in other projects, vectorization
+uses `` __attribute__((vector_size(N))`` instead of intrinsics.
+Which makes it platform-independent, but requires GCC or Clang for
+good performance.
+
+I don't plan to use GPU for computations, so I won't try
 [cuFFT](https://developer.nvidia.com/cufft),
 [clFFT](https://github.com/clMathLibraries/clFFT),
 [fbfft](https://github.com/facebook/fbcuda/tree/master/fbfft),
@@ -48,9 +58,9 @@ First, a quick look at these projects:
 |pffft    | BSD-like| 2011  |  C       | 1.5  |          |
 |KissFFT  | 3-BSD   | 2003  |  C       | 0.7+1.1 | 1.1 for `tools/` |
 |meow_fft | 0-BSD   | 2017  |  C       | 1.9  | single header |
-|pocketfft| 3-BSD   | 2010? |  C++     | 2.2  |          |
+|pocketfft| 3-BSD   | 2010? |  C++     | 2.2  | single header |
 
-Note: pocketfft was originally in C, but now the repository has a ``cpp``
+Note: pocketfft was originally in C, but now the repository has a `cpp`
 branch and I'm migrating my benchmarks to it.
 
 When I was looking for a fast
@@ -102,6 +112,9 @@ Here are results from the `preliminary.py` script on my laptop
     scipy    0.106      7.091
     pyfftw   0.060      4.442
 
+This is before NumPy switched to PocketFFT. NumPy will use internally
+PocketFFT from version 1.17, which is not released yet when I'm writing it.
+
 Strange, the gap between MKL and FFTW should not be that big?
 The 416x256x416 transform result from `3d.cpp` (see below) are:
 0.65s for FFTW (measured), 1.4s for FFTW (estimated) and 4.3s for kissfft.
@@ -145,6 +158,10 @@ point. All the benchmarks on this page are:
     kissfft           2536 ns    4929 ns   6030 ns   6553 ns
 
 NS = disabled SIMD
+
+I tested libraries with disabled SIMD (vectorization)
+because I plan to use FFT in WebAssembly which does not support
+SIMD instructions yet.
 
 To a first approximation, SSE1 gives 3x speedup, AVX -- 6x.
 
@@ -262,7 +279,14 @@ Only the last transpose is in-place (and it is also tiled).
     tiled zxy       49 ms
     in-place zxy    91 ms
 
+### Summary
 
-### WebAssembly
+For my project PocketFFT has the best trade-off between size and performance.
 
-TODO
+It wouldn't hurt to have FFTW as a compile-time alternative,
+but I left it for now because FFTW supports only having c2r transform
+with the data is contiguous in the halved direction, which isn't my case.
+According to the docs:
+"We could have instead taken half of any other dimension,
+but implementation turns out to be simpler if the last,
+contiguous, dimension is used.".
