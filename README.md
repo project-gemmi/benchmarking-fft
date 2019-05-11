@@ -11,12 +11,12 @@ and it is the reference point for other libraries.
 [MKL](https://software.intel.com/en-us/mkl/features/fft)
 (Intel Math Kernel Library) FFT is significantly faster.
 It's not open-source, but it is freely redistributable.
-MKL has fantastic compatibility layer with FFTW
+MKL has fantastic compatibility with FFTW
 (no need to change the code, you just link it with MKL instead of fftw3)
 and with NumPy (no need to change the code, just do `pip install mkl-fft`).
 
 [KFR](https://github.com/kfrlib/kfr) also claims to be faster than FFTW,
-but I read that in the latest version (3.0) it requires Clang to for
+but I read that in the latest version (3.0) it requires Clang for
 top performance, so I didn't benchmark it.
 
 [FFTS](https://github.com/anthonix/ffts) (South) and
@@ -34,10 +34,10 @@ tend to be slower, but are also worth considering.
 
 [PocketFFT](https://gitlab.mpcdf.mpg.de/mtr/pocketfft)
 is vectorized only for multi-dimensional transforms (or for doing
-multiple 1D transforms). Unlike in other projects, vectorization
+multiple 1D transforms). Unlike in other projects, it
 uses `` __attribute__((vector_size(N))`` instead of intrinsics.
-Which makes it platform-independent, but requires GCC or Clang for
-good performance.
+Which makes it platform independent, but requires GCC or Clang
+for vectorization.
 
 I don't plan to use GPU for computations, so I won't try
 [cuFFT](https://developer.nvidia.com/cufft),
@@ -115,9 +115,8 @@ Here are results from the `preliminary.py` script on my laptop
 This is before NumPy switched to PocketFFT. NumPy will use internally
 PocketFFT from version 1.17, which is not released yet when I'm writing it.
 
-Strange, the gap between MKL and FFTW should not be that big?
-The 416x256x416 transform result from `3d.cpp` (see below) are:
-0.65s for FFTW (measured), 1.4s for FFTW (estimated) and 4.3s for kissfft.
+MKL is here as fast as in the native benchmark below (`3d.cpp`)
+while other libraries are slower than the slowest FFT run from C++.
 
 ### Binary size
 
@@ -211,8 +210,7 @@ Notes:
 
 * The output from different libraries is ordered differently.
 * For small sizes (such as the ones above) R2C in FFTW (with SIMD)
-  is slower than C2C. Strange, but I double checked the alignment of arrays
-  and the muFFT benchmark shows the same anomaly on my computer.
+  can be slower than C2C.
 
 
 ### 2D performance
@@ -230,8 +228,7 @@ Notes:
     kissfft        1583 us    5766 us
 
 Here, PocketFFT is compiled with SSE1 support only.
-It is significantly faster when compiled with AVX support.
-I haven't tried AVX-512.
+It is faster when compiled with AVX support. I haven't tried AVX-512.
 
 ### 3D performance
 
@@ -251,8 +248,6 @@ No changes in the source code, only the linking command needs to be modified.
 
 **real-to-complex** (`3d-r.cpp`)
 
-PocketFFT compiled with AVX support is as fast as FFTW3.
-
                  128x128x320   256x256x256    416x256x416  90x128x120
     MKL              17 ms         61 ms         185 ms        4 ms
     fftw3 est.       28 ms        219 ms         605 ms       10 ms
@@ -262,6 +257,8 @@ PocketFFT compiled with AVX support is as fast as FFTW3.
     fftw3 est. NS    88 ms        285 ms         770 ms       19 ms
     fftw3 meas. NS   62 ms        206 ms         715 ms       15 ms
     kissfft         112 ms        436 ms        2078 ms       27 ms
+
+PocketFFT compiled with AVX support is as fast as FFTW3.
 
 **matrix transpose** (`transpose.cpp`)
 
@@ -281,11 +278,12 @@ Only the last transpose is in-place (and it is also tiled).
 
 ### Summary
 
-For my project PocketFFT has the best trade-off between size and performance.
+For [my project](https://github.com/project-gemmi/gemmi/)
+PocketFFT has the best trade-off between the size, features and performance.
 
 It wouldn't hurt to have FFTW as a compile-time alternative,
-but I left it for now because FFTW supports only having c2r transform
-with the data is contiguous in the halved direction, which isn't my case.
+but I left it for now because c2r transform in FFTW requires
+data contiguous in the halved direction, which isn't my case.
 According to the docs:
 "We could have instead taken half of any other dimension,
 but implementation turns out to be simpler if the last,
