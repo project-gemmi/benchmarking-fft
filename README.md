@@ -4,6 +4,11 @@ FFTW library has an [impressive list](http://www.fftw.org/benchfft/ffts.html)
 of other FFT libraries that FFTW was benchmarked against.
 Unfortunately, this list has not been updated since about 2005,
 and the situation has changed.
+(Update: Steven Johnson
+[showed a new benchmark](https://youtu.be/mSgXWpvQEHE?t=2588)
+during JuliaCon 2019. In his hands FFTW runs slightly faster
+than Intel MKL. In my hands MKL is ~50% faster.
+Maybe I didn't squeeze all the performance from FFTW.)
 
 FFTW is not the fastest one anymore, but it still has many advantages
 and it is the reference point for other libraries.
@@ -114,6 +119,11 @@ Here are results from the `preliminary.py` script on my laptop
 
 This is before NumPy switched to PocketFFT. NumPy will use internally
 PocketFFT from version 1.17, which is not released yet when I'm writing it.
+
+(Update: I'm not planning on updating the results, but it's worth noting
+that SciPy also switched to PocketFFT in version 1.4.0.
+And added module `scipy.fft` with different API than the old `scipy.fftpack`.
+While NumPy is using PocketFFT in C, SciPy adopted newer version in templated C++.)
 
 MKL is here as fast as in the native benchmark below (`3d.cpp`)
 while other libraries are slower than the slowest FFT run from C++.
