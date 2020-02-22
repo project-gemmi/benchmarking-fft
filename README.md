@@ -291,10 +291,12 @@ Only the last transpose is in-place (and it is also tiled).
 For [my project](https://github.com/project-gemmi/gemmi/)
 PocketFFT has the best trade-off between the size, features and performance.
 
-It wouldn't hurt to have FFTW as a compile-time alternative,
-but I left it for now because c2r transform in FFTW requires
-data contiguous in the halved direction, which isn't my case.
-According to the docs:
-"We could have instead taken half of any other dimension,
-but implementation turns out to be simpler if the last,
-contiguous, dimension is used.".
+I considered FFTW as a compile-time alternative,
+but I'd need to change how my data is ordered.
+The c2r transform in FFTW requires data
+[contiguous in the halved direction](http://www.fftw.org/fftw3_doc/Real_002ddata-DFT-Array-Format.html). Simply transposing the data before FFT
+would likely cancel out any performance benefit from using FFTW.
+
+Update: I've been using PocketFFT for almost a year now.
+I use the [cpp branch](https://gitlab.mpcdf.mpg.de/mtr/pocketfft/tree/cpp).
+It's a perfect fit for my needs.
