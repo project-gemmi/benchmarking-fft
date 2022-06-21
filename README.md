@@ -30,7 +30,8 @@ at least in some cases. I'd benchmark them if I had more time.
 
 [muFFT](https://github.com/Themaister/muFFT)
 and [pffft](https://bitbucket.org/jpommier/pffft)
-seem to have performance comparable to FFTW while being much simpler.
+seem to have performance comparable to FFTW while being much simpler.  
+Update: there is also [PGFFT](https://www.shoup.net/PGFFT/) in this category.
 
 Libraries that are not vectorized such as
 [KissFFT](https://github.com/mborgerding/kissfft),
@@ -61,6 +62,7 @@ First, a quick look at these projects:
 |FFTE     | custom  | 20??  |  Fortran |      |          |
 |muFFT    | MIT     | 2015  |  C       | 2.5  |          |
 |pffft    | BSD-like| 2011  |  C       | 1.5  |          |
+|PGFFT    | 2-BSD   | 2019  |  C++11   | 1.0  |          |
 |KissFFT  | 3-BSD   | 2003  |  C       | 0.7+1.1 | 1.1 for `tools/` |
 |meow_fft | 0-BSD   | 2017  |  C       | 1.9  | single header |
 |pocketfft| 3-BSD   | 2010? |  C++     | 2.2  | single header |
@@ -91,6 +93,7 @@ r-N means radix-N (radix-4 and 8 are supported anyway as 2^N).
 |FFTE     |  +  |  +  |  +  |  -  |  +  |   -   | +  | +  |  -  |  +  |
 |muFFT    |  -  |  +  |  -  |  -  |  +  |   -   | +  | -  |  +  |  -  |
 |pffft    |  +  |  +  |  +  |  -  |  -  |   -   | -  | -  |  +  |  -  |
+|PGFFT    |  -  |  -  |  -  |  -  |  -  |  ++   | -  | -  |  -  |  +  |
 |KissFFT  |  +  |  +  |  +  |  -  |  -  |   +   | +  | +  |  +  |  +  |
 |meow_fft |  +  |  +  |  +  |  -  |  +  |   +   | -  | -  |  +  |  -  |
 |pocketfft|  +  |  +  |  +  | +/- |  -  |  ++   | +  | +  |  +  |  +  |
@@ -137,7 +140,7 @@ PocketFFT has more butterflies but muFFT has each in four versions (no-SIMD,
 pffft and meow_fft are about 32kB.
 pffft has also four versions (no-SIMD, SSE1, AltiVec and NEON),
 but only one is compiled.  
-KissFFT (1D complex-to-complex) is only about 20kB.
+KissFFT (1D complex-to-complex) is only about 20kB. PGFFT – a few kB more.
 
 ### 1D performance
 
